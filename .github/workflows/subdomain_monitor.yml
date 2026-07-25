@@ -1,0 +1,48 @@
+name: Subdomain Radar
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"   # كل 12 ساعة
+  workflow_dispatch: {}       # تشغيل يدوي من تبويب Actions
+
+permissions:
+  contents: write
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340       # حد أمان (أقل من الحد الأقصى 360 لـ GitHub)
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Install subfinder
+        run: |
+          go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run subdomain monitor
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python subdomain_monitor.py
+
+      - name: Commit updated database
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/subdomains_db.json
+          git diff --quiet --cached || git commit -m "chore: update subdomains db [skip ci]"
+          git push
