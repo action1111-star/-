@@ -256,7 +256,6 @@
 *.amazon.sa
 *.amazon.se
 *.amazon.sg
-*.amazonaws.com/*
 *.amazoncognito.com/*
 *.amazongames.com
 *.amazonworkdocs.com/*
