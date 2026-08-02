@@ -446,8 +446,7 @@
 *.bathandbodyworks.ro
 *.bbystatic.com
 *.bcbits.com
-*.bebabelkuwait.com/
-*.bell.ca
+*.bebabelkuwait.com
 *.beneluxpecongress.com
 *.beneluxunquote.com
 *.berush.com
